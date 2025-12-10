@@ -1,5 +1,5 @@
 // Import image properly
-import profile1 from "../../assets/images/profile 1.jpg";
+import profile1 from "../../assets/images/profile1.jpg";
 
 export const aboutData = {
   hero: {
