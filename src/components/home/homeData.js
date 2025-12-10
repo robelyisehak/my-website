@@ -4,7 +4,7 @@ export const homeData = {
     name: "ROBEL YISEHAK",
     title: "Frontend Web Developer",
     tagline: "I build modern, fast, and beautiful digital experiences with passion and precision.",
-    profileImage: "../../src/assets/images/profile about.jpg" // Put in public/images/
+
   },
   services: [
     {
