@@ -5,7 +5,7 @@ import ContactForm from "../../components/contact/ContactForm";
 import AvailabilityBadge from "../../components/contact/AvailabilityBadge";
 
 // FIX: Import image properly
-import profile2 from "../../assets/images/profile 2.jpg";
+import profile2 from "../../assets/images/profile-2.jpg";
 
 export default function Contact() {
   return (
