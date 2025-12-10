@@ -1,13 +1,16 @@
-// src/components/about/aboutData.js
+// Import image properly
+import profile1 from "../../assets/images/profile 1.jpg";
+
 export const aboutData = {
   hero: {
     title: "About Me",
-    subtitle: "A passionate Computer Science graduate transforming ideas into elegant, high-performance digital solutions"
+    subtitle:
+      "A passionate Computer Science graduate transforming ideas into elegant, high-performance digital solutions"
   },
   profile: {
     name: "Robel Yisehak",
     title: "Frontend Web Developer",
-    image: "../../src/assets/images/profile 1.jpg", // Put in public/images/
+    image: profile1, // FIXED
     fullText: `Computer Science graduate and junior frontend web developer with strong skills in HTML, CSS, JavaScript, React, Next.js, Tailwind CSS, Node.js, PHP, Git, and GitHub. Experienced in building responsive, interactive, and user-friendly web applications, including a brokerage management system, vehicle management system, and personal portfolio websites. Skilled in WordPress development for customizable websites and content management.
 
 Passionate about delivering clean, scalable, and visually engaging solutions that improve user experience. Open to freelance or full-time opportunities in frontend development.`

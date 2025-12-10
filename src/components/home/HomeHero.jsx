@@ -1,19 +1,21 @@
 // src/components/home/HomeHero.jsx
 import { ArrowRight } from "lucide-react";
 import { homeData } from "./homeData";
+import profileAbout from "../../assets/images/profile_about.jpg";  // ✅ Correct import
 
 export default function HomeHero() {
-  const { name, title, tagline, profileImage } = homeData.hero;
+  const { name, title, tagline } = homeData.hero;
 
   return (
     <section className="pt-32 pb-20 px-6 md:px-12 lg:pt-40">
       <div className="max-w-7xl mx-auto">
         <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
+
           {/* Left - Profile Photo */}
           <div className="order-2 lg:order-1 flex justify-center lg:justify-end">
             <div className="relative group">
               <img 
-                src={profileImage} 
+                src={profileAbout}     // ✅ Use imported image
                 alt="Robel Yisehak"
                 className="w-80 h-80 md:w-96 md:h-96 rounded-3xl object-cover shadow-2xl border-4 border-cyan-500/30 
                            group-hover:border-cyan-400 transition-all duration-500 
@@ -49,6 +51,7 @@ export default function HomeHero() {
                 Hire Me
               </a>
             </div>
+
           </div>
         </div>
       </div>

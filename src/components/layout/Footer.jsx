@@ -1,6 +1,6 @@
 // src/components/layout/Footer.jsx
 import { Phone, Mail, MapPin, Linkedin } from "lucide-react";
-
+import profilePhoto from "../../assets/images/robel_cv_photo.jpg";
 export default function Footer() {
   return (
     <footer className="bg-gradient-to-t from-gray-900 via-black to-gray-900 border-t border-cyan-500/30 py-12">
@@ -10,7 +10,7 @@ export default function Footer() {
         <div className="text-center lg:text-left">
           <div className="flex items-center justify-center lg:justify-start gap-6 mb-8">
             <img 
-              src="../../src/assets/images/robel-cv-photo.jpg" 
+              src={profilePhoto} 
               alt="Robel Yisehak"
               className="w-24 h-24 rounded-full object-cover border-4 border-cyan-500 shadow-2xl"
             />
