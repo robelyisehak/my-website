@@ -22,7 +22,7 @@ export default function Header() {
         <a href="/" className="flex items-center gap-4 group">
           <div className="relative">
             <img 
-              src="./src/assets/images/robel-cv-photo.jpg" 
+              src="./src/assets/images/robel_cv_photo.jpg" 
               alt="Robel Yisehak"
               className="w-16 h-16 rounded-full object-cover border-4 border-cyan-500 shadow-xl"
             />
