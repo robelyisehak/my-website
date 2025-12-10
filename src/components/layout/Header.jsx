@@ -1,6 +1,8 @@
-// src/components/layout/Header.jsx
 import { useState } from "react";
 import { Menu, X } from "lucide-react";
+
+// IMPORT IMAGE CORRECTLY
+import profilePhoto from "../../assets/images/robel_cv_photo.jpg";
 
 export default function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -22,7 +24,7 @@ export default function Header() {
         <a href="/" className="flex items-center gap-4 group">
           <div className="relative">
             <img 
-              src="./src/assets/images/robel_cv_photo.jpg" 
+              src={profilePhoto}
               alt="Robel Yisehak"
               className="w-16 h-16 rounded-full object-cover border-4 border-cyan-500 shadow-xl"
             />
@@ -34,7 +36,7 @@ export default function Header() {
               ROBEL YISEHAK
             </h1>
             <p className="text-sm text-cyan-400 font-medium tracking-widest">
-             FRONTEND WEB DEVELOPER
+              FRONTEND WEB DEVELOPER
             </p>
           </div>
         </a>
