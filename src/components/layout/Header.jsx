@@ -11,7 +11,9 @@ export default function Header() {
 
   useEffect(() => {
     const loadPhoto = () => {
-      const savedPhoto = getPhoto("headerPhoto", defaultProfilePhoto);
+      // Check for shared header/footer photo first, then fall back to individual header photo
+      const sharedPhoto = localStorage.getItem("admin_headerFooterPhoto");
+      const savedPhoto = sharedPhoto || getPhoto("headerPhoto", defaultProfilePhoto);
       setProfilePhoto(savedPhoto);
     };
     
@@ -19,7 +21,7 @@ export default function Header() {
     
     // Listen for storage changes (when admin updates photos)
     const handleStorageChange = (e) => {
-      if (e.key === "admin_headerPhoto") {
+      if (e.key === "admin_headerFooterPhoto" || e.key === "admin_headerPhoto") {
         loadPhoto();
       }
     };

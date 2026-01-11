@@ -9,14 +9,16 @@ export default function Footer() {
 
   useEffect(() => {
     const loadPhoto = () => {
-      const savedPhoto = getPhoto("footerPhoto", defaultProfilePhoto);
+      // Check for shared header/footer photo first, then fall back to individual footer photo
+      const sharedPhoto = localStorage.getItem("admin_headerFooterPhoto");
+      const savedPhoto = sharedPhoto || getPhoto("footerPhoto", defaultProfilePhoto);
       setProfilePhoto(savedPhoto);
     };
     
     loadPhoto();
     
     const handleStorageChange = (e) => {
-      if (e.key === "admin_footerPhoto") {
+      if (e.key === "admin_headerFooterPhoto" || e.key === "admin_footerPhoto") {
         loadPhoto();
       }
     };

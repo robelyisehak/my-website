@@ -1,5 +1,6 @@
 // src/components/certifications/CertificationModal.jsx
 import { GraduationCap, Award, Download, Trophy, Star, Calendar } from "lucide-react";
+import { downloadCV } from "../../utils/helpers";
 
 export default function CertificationModal({ cert, onClose }) {
   if (!cert) return null;
@@ -66,14 +67,13 @@ export default function CertificationModal({ cert, onClose }) {
 
           {/* CTA */}
           <div className="mt-10 text-center">
-            <a 
-              href="/Robel-Yisehak-CV.pdf" 
-              download="Robel-Yisehak-CV.pdf"
+            <button 
+              onClick={downloadCV}
               className="inline-flex items-center gap-4 px-10 py-4 bg-gradient-to-r from-purple-600 to-cyan-600 
                          rounded-xl font-bold text-lg hover:shadow-2xl transition-all"
             >
               <Download className="w-6 h-6" /> Download Full CV
-            </a>
+            </button>
           </div>
         </div>
       </div>

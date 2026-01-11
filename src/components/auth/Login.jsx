@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { Lock, AlertCircle } from "lucide-react";
 
-const ADMIN_PASSWORD = "rol123";
+const DEFAULT_PASSWORD = "rol123";
 
 export default function Login({ onLogin }) {
   const [password, setPassword] = useState("");
@@ -14,9 +14,12 @@ export default function Login({ onLogin }) {
     setError("");
     setIsLoading(true);
 
+    // Get password from localStorage or use default
+    const savedPassword = localStorage.getItem("admin_password") || DEFAULT_PASSWORD;
+
     // Simulate a small delay for better UX
     setTimeout(() => {
-      if (password === ADMIN_PASSWORD) {
+      if (password === savedPassword) {
         // Store authentication in sessionStorage (clears when browser closes)
         sessionStorage.setItem("admin_authenticated", "true");
         onLogin(true);

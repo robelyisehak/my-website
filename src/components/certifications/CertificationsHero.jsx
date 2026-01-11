@@ -1,5 +1,6 @@
 // src/components/certifications/CertificationsHero.jsx
 import { Download, FileText } from "lucide-react";
+import { downloadCV } from "../../utils/helpers";
 
 export default function CertificationsHero() {
   return (
@@ -16,15 +17,14 @@ export default function CertificationsHero() {
           Bachelor of Science in Computer Science + Verified Professional Credentials
         </p>
 
-        <a 
-          href="/Robel-Yisehak-CV.pdf" 
-          download="Robel-Yisehak-CV.pdf"
+        <button 
+          onClick={downloadCV}
           className="inline-flex items-center gap-4 px-12 py-6 bg-gradient-to-r from-purple-600 via-pink-600 to-cyan-600 rounded-full text-2xl font-bold hover:shadow-2xl hover:shadow-purple-500/50 transition-all group"
         >
           <Download className="w-8 h-8 group-hover:scale-110 transition-transform" />
           Download My Full CV (PDF)
           <FileText className="w-8 h-8 group-hover:scale-110 transition-transform" />
-        </a>
+        </button>
       </div>
     </section>
   );

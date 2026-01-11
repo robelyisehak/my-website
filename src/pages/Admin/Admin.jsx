@@ -1,7 +1,7 @@
 // src/pages/Admin/Admin.jsx
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Upload, Image as ImageIcon, Save, Trash2, LogOut, FileText } from "lucide-react";
+import { Upload, Image as ImageIcon, Save, Trash2, LogOut, FileText, Lock, Eye, EyeOff, AlertCircle } from "lucide-react";
 
 const PROJECTS = [
   { id: "brokerage", name: "Online Brokerage Management System" },
@@ -12,9 +12,8 @@ const PROJECTS = [
 export default function Admin() {
   const navigate = useNavigate();
   const [photos, setPhotos] = useState({
-    headerPhoto: "",
+    headerFooterPhoto: "",
     homeHeroPhoto: "",
-    footerPhoto: "",
     aboutProfileCardPhoto: "",
     aboutProfileModalPhoto: "",
     contactPhoto: "",
@@ -26,9 +25,8 @@ export default function Admin() {
     cvFile: ""
   });
   const [previews, setPreviews] = useState({
-    headerPhoto: "",
+    headerFooterPhoto: "",
     homeHeroPhoto: "",
-    footerPhoto: "",
     aboutProfileCardPhoto: "",
     aboutProfileModalPhoto: "",
     contactPhoto: "",
@@ -39,7 +37,19 @@ export default function Admin() {
     },
     cvFile: ""
   });
-  const [activeTab, setActiveTab] = useState("header");
+  const [activeTab, setActiveTab] = useState("headerFooter");
+  const [passwordData, setPasswordData] = useState({
+    currentPassword: "",
+    newPassword: "",
+    confirmPassword: ""
+  });
+  const [showPasswords, setShowPasswords] = useState({
+    current: false,
+    new: false,
+    confirm: false
+  });
+  const [passwordError, setPasswordError] = useState("");
+  const [passwordSuccess, setPasswordSuccess] = useState("");
 
   const handleLogout = () => {
     sessionStorage.removeItem("admin_authenticated");
@@ -48,25 +58,25 @@ export default function Admin() {
 
   // Load saved photos from localStorage on mount
   useEffect(() => {
+    // Check for shared header/footer photo first, then individual ones for backward compatibility
+    const savedHeaderFooter = localStorage.getItem("admin_headerFooterPhoto");
     const savedHeader = localStorage.getItem("admin_headerPhoto");
-    const savedHomeHero = localStorage.getItem("admin_homeHeroPhoto");
     const savedFooter = localStorage.getItem("admin_footerPhoto");
+    const savedHomeHero = localStorage.getItem("admin_homeHeroPhoto");
     const savedAboutCard = localStorage.getItem("admin_aboutProfileCardPhoto");
     const savedAboutModal = localStorage.getItem("admin_aboutProfileModalPhoto");
     const savedContact = localStorage.getItem("admin_contactPhoto");
     const savedCV = localStorage.getItem("admin_cvFile");
 
-    if (savedHeader) {
-      setPhotos(prev => ({ ...prev, headerPhoto: savedHeader }));
-      setPreviews(prev => ({ ...prev, headerPhoto: savedHeader }));
+    // Use shared photo if available, otherwise use header photo as default
+    const headerFooterPhoto = savedHeaderFooter || savedHeader || savedFooter;
+    if (headerFooterPhoto) {
+      setPhotos(prev => ({ ...prev, headerFooterPhoto }));
+      setPreviews(prev => ({ ...prev, headerFooterPhoto }));
     }
     if (savedHomeHero) {
       setPhotos(prev => ({ ...prev, homeHeroPhoto: savedHomeHero }));
       setPreviews(prev => ({ ...prev, homeHeroPhoto: savedHomeHero }));
-    }
-    if (savedFooter) {
-      setPhotos(prev => ({ ...prev, footerPhoto: savedFooter }));
-      setPreviews(prev => ({ ...prev, footerPhoto: savedFooter }));
     }
     if (savedAboutCard) {
       setPhotos(prev => ({ ...prev, aboutProfileCardPhoto: savedAboutCard }));
@@ -173,16 +183,16 @@ export default function Admin() {
   };
 
   const handleSave = () => {
-    if (photos.headerPhoto) {
-      localStorage.setItem("admin_headerPhoto", photos.headerPhoto);
+    if (photos.headerFooterPhoto) {
+      // Save to shared key for header and footer
+      localStorage.setItem("admin_headerFooterPhoto", photos.headerFooterPhoto);
+      // Also save to individual keys for backward compatibility
+      localStorage.setItem("admin_headerPhoto", photos.headerFooterPhoto);
+      localStorage.setItem("admin_footerPhoto", photos.headerFooterPhoto);
       window.dispatchEvent(new Event("photoUpdated"));
     }
     if (photos.homeHeroPhoto) {
       localStorage.setItem("admin_homeHeroPhoto", photos.homeHeroPhoto);
-      window.dispatchEvent(new Event("photoUpdated"));
-    }
-    if (photos.footerPhoto) {
-      localStorage.setItem("admin_footerPhoto", photos.footerPhoto);
       window.dispatchEvent(new Event("photoUpdated"));
     }
     if (photos.aboutProfileCardPhoto) {
@@ -233,11 +243,62 @@ export default function Admin() {
         }
       }));
       localStorage.setItem(`admin_projectScreenshots_${projectId}`, JSON.stringify(newScreenshots));
+    } else if (type === "headerFooterPhoto") {
+      // Remove shared photo and individual ones
+      setPhotos(prev => ({ ...prev, headerFooterPhoto: "" }));
+      setPreviews(prev => ({ ...prev, headerFooterPhoto: "" }));
+      localStorage.removeItem("admin_headerFooterPhoto");
+      localStorage.removeItem("admin_headerPhoto");
+      localStorage.removeItem("admin_footerPhoto");
     } else {
       setPhotos(prev => ({ ...prev, [type]: "" }));
       setPreviews(prev => ({ ...prev, [type]: "" }));
       localStorage.removeItem(`admin_${type}`);
     }
+  };
+
+  const handlePasswordChange = () => {
+    setPasswordError("");
+    setPasswordSuccess("");
+
+    // Get current password from localStorage or use default
+    const DEFAULT_PASSWORD = "rol123";
+    const savedPassword = localStorage.getItem("admin_password") || DEFAULT_PASSWORD;
+
+    // Validate inputs
+    if (!passwordData.currentPassword || !passwordData.newPassword || !passwordData.confirmPassword) {
+      setPasswordError("All fields are required");
+      return;
+    }
+
+    if (passwordData.currentPassword !== savedPassword) {
+      setPasswordError("Current password is incorrect");
+      return;
+    }
+
+    if (passwordData.newPassword.length < 4) {
+      setPasswordError("New password must be at least 4 characters long");
+      return;
+    }
+
+    if (passwordData.newPassword !== passwordData.confirmPassword) {
+      setPasswordError("New passwords do not match");
+      return;
+    }
+
+    // Save new password
+    localStorage.setItem("admin_password", passwordData.newPassword);
+    setPasswordSuccess("Password changed successfully!");
+    setPasswordData({
+      currentPassword: "",
+      newPassword: "",
+      confirmPassword: ""
+    });
+
+    // Clear success message after 3 seconds
+    setTimeout(() => {
+      setPasswordSuccess("");
+    }, 3000);
   };
 
   const renderPhotoSection = (type, title, description, recommendedSize) => (
@@ -291,13 +352,13 @@ export default function Admin() {
   );
 
   const tabs = [
-    { id: "header", name: "Header Photo" },
+    { id: "headerFooter", name: "Header & Footer Photo" },
     { id: "home", name: "Home Hero Photo" },
-    { id: "footer", name: "Footer Photo" },
     { id: "about", name: "About Page Photos" },
     { id: "contact", name: "Contact Photo" },
     { id: "projects", name: "Project Screenshots" },
-    { id: "cv", name: "CV File" }
+    { id: "cv", name: "CV File" },
+    { id: "password", name: "Change Password" }
   ];
 
   return (
@@ -338,11 +399,11 @@ export default function Admin() {
           ))}
         </div>
 
-        {/* Header Photo Tab */}
-        {activeTab === "header" && renderPhotoSection(
-          "headerPhoto",
-          "Header Profile Photo",
-          "This photo appears in the header navigation bar at the top of every page.",
+        {/* Header & Footer Photo Tab */}
+        {activeTab === "headerFooter" && renderPhotoSection(
+          "headerFooterPhoto",
+          "Header & Footer Photo",
+          "This photo appears in both the header navigation bar (top) and footer section (bottom) of every page. Upload once to update both locations.",
           "200x200px or square aspect ratio"
         )}
 
@@ -352,14 +413,6 @@ export default function Admin() {
           "Home Hero Photo",
           "This photo appears on the home page hero section.",
           "800x800px or square aspect ratio"
-        )}
-
-        {/* Footer Photo Tab */}
-        {activeTab === "footer" && renderPhotoSection(
-          "footerPhoto",
-          "Footer Photo",
-          "This photo appears in the footer section at the bottom of every page.",
-          "200x200px or square aspect ratio"
         )}
 
         {/* About Page Photos Tab */}
@@ -444,6 +497,121 @@ export default function Admin() {
           </div>
         )}
 
+        {/* Change Password Tab */}
+        {activeTab === "password" && (
+          <div className="bg-gray-900/50 rounded-3xl p-8 border border-cyan-500/30">
+            <h2 className="text-3xl font-bold text-white mb-6 flex items-center gap-3">
+              <Lock className="w-8 h-8 text-cyan-400" />
+              Change Admin Password
+            </h2>
+            <div className="max-w-2xl mx-auto space-y-6">
+              <div>
+                <label className="block text-gray-300 font-medium mb-2">
+                  Current Password
+                </label>
+                <div className="relative">
+                  <input
+                    type={showPasswords.current ? "text" : "password"}
+                    value={passwordData.currentPassword}
+                    onChange={(e) => {
+                      setPasswordData(prev => ({ ...prev, currentPassword: e.target.value }));
+                      setPasswordError("");
+                    }}
+                    className="w-full px-6 py-4 bg-gray-800/50 border border-cyan-500/30 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/50 transition pr-12"
+                    placeholder="Enter current password"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPasswords(prev => ({ ...prev, current: !prev.current }))}
+                    className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-cyan-400 transition"
+                  >
+                    {showPasswords.current ? <EyeOff size={20} /> : <Eye size={20} />}
+                  </button>
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-gray-300 font-medium mb-2">
+                  New Password
+                </label>
+                <div className="relative">
+                  <input
+                    type={showPasswords.new ? "text" : "password"}
+                    value={passwordData.newPassword}
+                    onChange={(e) => {
+                      setPasswordData(prev => ({ ...prev, newPassword: e.target.value }));
+                      setPasswordError("");
+                    }}
+                    className="w-full px-6 py-4 bg-gray-800/50 border border-cyan-500/30 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/50 transition pr-12"
+                    placeholder="Enter new password (min 4 characters)"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPasswords(prev => ({ ...prev, new: !prev.new }))}
+                    className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-cyan-400 transition"
+                  >
+                    {showPasswords.new ? <EyeOff size={20} /> : <Eye size={20} />}
+                  </button>
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-gray-300 font-medium mb-2">
+                  Confirm New Password
+                </label>
+                <div className="relative">
+                  <input
+                    type={showPasswords.confirm ? "text" : "password"}
+                    value={passwordData.confirmPassword}
+                    onChange={(e) => {
+                      setPasswordData(prev => ({ ...prev, confirmPassword: e.target.value }));
+                      setPasswordError("");
+                    }}
+                    className="w-full px-6 py-4 bg-gray-800/50 border border-cyan-500/30 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/50 transition pr-12"
+                    placeholder="Confirm new password"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPasswords(prev => ({ ...prev, confirm: !prev.confirm }))}
+                    className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-cyan-400 transition"
+                  >
+                    {showPasswords.confirm ? <EyeOff size={20} /> : <Eye size={20} />}
+                  </button>
+                </div>
+              </div>
+
+              {passwordError && (
+                <div className="flex items-center gap-3 px-4 py-3 bg-red-900/30 border border-red-500/50 rounded-xl text-red-400">
+                  <AlertCircle size={20} />
+                  <span>{passwordError}</span>
+                </div>
+              )}
+
+              {passwordSuccess && (
+                <div className="flex items-center gap-3 px-4 py-3 bg-green-900/30 border border-green-500/50 rounded-xl text-green-400">
+                  <Lock size={20} />
+                  <span>{passwordSuccess}</span>
+                </div>
+              )}
+
+              <button
+                onClick={handlePasswordChange}
+                className="w-full px-6 py-4 bg-gradient-to-r from-cyan-500 to-purple-600 rounded-xl font-bold text-lg text-white hover:shadow-2xl hover:shadow-cyan-500/40 transition-all flex items-center justify-center gap-3"
+              >
+                <Lock size={20} />
+                Change Password
+              </button>
+
+              <div className="mt-6 p-4 bg-gray-800/30 rounded-xl border border-yellow-500/30">
+                <p className="text-sm text-yellow-400">
+                  <strong>Note:</strong> After changing your password, you'll need to use the new password to log in. 
+                  The default password is "rol123" if you haven't changed it before.
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* CV File Tab */}
         {activeTab === "cv" && (
           <div className="bg-gray-900/50 rounded-3xl p-8 border border-cyan-500/30">
@@ -488,7 +656,7 @@ export default function Admin() {
               </div>
               <div className="flex flex-col justify-center">
                 <p className="text-gray-400 mb-4">
-                  Upload your CV/Resume file. This will be available for download on the About page.
+                  Upload your CV/Resume file. This will be available for download across all pages (About page, Certifications page, etc.). When you update the CV here, it will change everywhere on the website.
                 </p>
                 <p className="text-sm text-gray-500">
                   File format: PDF only
